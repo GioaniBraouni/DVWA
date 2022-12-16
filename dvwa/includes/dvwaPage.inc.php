@@ -466,20 +466,6 @@ function dvwaButtonSourceHtmlGet( $pId ) {
 
 
 // Database Management --
-
-if( $DBMS == 'MySQL' ) {
-	$DBMS = htmlspecialchars(strip_tags( $DBMS ));
-	$DBMS_errorFunc = 'mysqli_error()';
-}
-elseif( $DBMS == 'PGSQL' ) {
-	$DBMS = htmlspecialchars(strip_tags( $DBMS ));
-	$DBMS_errorFunc = 'pg_last_error()';
-}
-else {
-	$DBMS = "No DBMS selected.";
-	$DBMS_errorFunc = '';
-}
-
 //$DBMS_connError = '
 //	<div align="center">
 //		<img src="' . DVWA_WEB_PAGE_TO_ROOT . 'dvwa/images/logo.png" />
@@ -496,8 +482,10 @@ function dvwaDatabaseConnect() {
 
 	if( $DBMS == 'MySQL' ) {
 		if( !@($GLOBALS["___mysqli_ston"] = mysqli_connect( $_DVWA[ 'db_server' ],  $_DVWA[ 'db_user' ],  $_DVWA[ 'db_password' ], "", $_DVWA[ 'db_port' ] ))
-		|| !@((bool)mysqli_query($GLOBALS["___mysqli_ston"], "USE " . $_DVWA[ 'db_database' ])) ) {
+			|| !@((bool)mysqli_query($GLOBALS["___mysqli_ston"], "USE " . $_DVWA[ 'db_database' ])) ) {
 			//die( $DBMS_connError );
+			$DBMS = htmlspecialchars(strip_tags( $DBMS ));
+			$DBMS_errorFunc = 'mysqli_error()';
 			dvwaLogout();
 			dvwaMessagePush( 'Unable to connect to the database.<br />' . $DBMS_errorFunc );
 			dvwaRedirect( DVWA_WEB_PAGE_TO_ROOT . 'setup.php' );
@@ -512,6 +500,10 @@ function dvwaDatabaseConnect() {
 		//or die( $DBMS_connError );
 		dvwaMessagePush( 'PostgreSQL is not currently supported.' );
 		dvwaPageReload();
+		/* For Later Use
+		$DBMS = htmlspecialchars(strip_tags( $DBMS ));
+		$DBMS_errorFunc = 'pg_last_error()';
+		*/
 	}
 	else {
 		die ( "Unknown {$DBMS} selected." );
@@ -521,7 +513,7 @@ function dvwaDatabaseConnect() {
 		$location = DVWA_WEB_PAGE_TO_ROOT . "database/" . $_DVWA['SQLITE_DB'];
 		$sqlite_db_connection = new SQLite3($location);
 		$sqlite_db_connection->enableExceptions(true);
-	#	print "sqlite db setup";
+		#	print "sqlite db setup";
 	}
 }
 
