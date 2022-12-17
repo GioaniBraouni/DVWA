@@ -3142,9 +3142,11 @@ class HTML5TreeConstructer {
                 $this->mode = self::IN_ROW;
             }
 
+
+        }
         /* A start tag whose tag name is one of: "caption", "col", "colgroup",
         "tbody", "td", "tfoot", "th", "thead", "tr" */
-        } elseif($token['type'] === HTML5::STARTTAG && in_array($token['name'],
+        elseif($token['type'] === HTML5::STARTTAG && in_array($token['name'],
         array('caption', 'col', 'colgroup', 'tbody', 'td', 'tfoot', 'th',
         'thead', 'tr'))) {
             /* If the stack of open elements does not have a td or th element
@@ -3159,28 +3161,10 @@ class HTML5TreeConstructer {
                 $this->closeCell();
                 return $this->inRow($token);
             }
-
-        /* A start tag whose tag name is one of: "caption", "col", "colgroup",
-        "tbody", "td", "tfoot", "th", "thead", "tr" */
-        } elseif($token['type'] === HTML5::STARTTAG && in_array($token['name'],
-        array('caption', 'col', 'colgroup', 'tbody', 'td', 'tfoot', 'th',
-        'thead', 'tr'))) {
-            /* If the stack of open elements does not have a td or th element
-            in table scope, then this is a parse error; ignore the token.
-            (innerHTML case) */
-            if(!$this->elementInScope(array('td', 'th'), true)) {
-                // Ignore.
-
-            /* Otherwise, close the cell (see below) and reprocess the current
-            token. */
-            } else {
-                $this->closeCell();
-                return $this->inRow($token);
-            }
-
+        }
         /* An end tag whose tag name is one of: "body", "caption", "col",
         "colgroup", "html" */
-        } elseif($token['type'] === HTML5::ENDTAG && in_array($token['name'],
+        elseif($token['type'] === HTML5::ENDTAG && in_array($token['name'],
         array('body', 'caption', 'col', 'colgroup', 'html'))) {
             /* Parse error. Ignore the token. */
 
