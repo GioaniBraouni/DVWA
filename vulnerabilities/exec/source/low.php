@@ -31,7 +31,7 @@ if( isset( $_POST[ 'Submit' ]  ) ) {
 	}
 
 	// Feedback for the end user
-	echo "<pre>{$cmd}</pre>";
+	$html .= "<pre>{$cmd}</pre>";
 }
 
 ?>
