@@ -190,11 +190,8 @@ class Parsedown
 
             $text = $indent > 0 ? substr($line, $indent) : $line;
 
-            # ~
-
             $Line = array('body' => $line, 'indent' => $indent, 'text' => $text);
 
-            # ~
 
             if (isset($CurrentBlock['continuable']))
             {
@@ -204,27 +201,22 @@ class Parsedown
                 if (isset($Block))
                 {
                     $CurrentBlock = $Block;
-
                     continue;
                 }
-                else
+                else if($this->isBlockCompletable($CurrentBlock['type']))
                 {
-                    if ($this->isBlockCompletable($CurrentBlock['type']))
-                    {
-                        $methodName = 'block' . $CurrentBlock['type'] . 'Complete';
-                        $CurrentBlock = $this->$methodName($CurrentBlock);
-                    }
+                    $methodName = 'block' . $CurrentBlock['type'] . 'Complete';
+                    $CurrentBlock = $this->$methodName($CurrentBlock);
                 }
+
             }
 
             # ~
 
             $marker = $text[0];
 
-            # ~
-
             $blockTypes = $this->getBlockTypes($marker);
-            # ~
+
 
             foreach ($blockTypes as $blockType)
             {
@@ -310,18 +302,29 @@ class Parsedown
                 . substr($line, strlen($beforeTab) + 1)
             ;
         }
+
+        return $line;
     }
 
     private function getBlockTypes($marker)
     {
-        $blockTypes = $this->unmarkedBlockTypes;
-
-        if (isset($this->BlockTypes[$marker]))
+        switch ($marker)
         {
-            foreach ($this->BlockTypes[$marker] as $blockType)
-            {
-                $blockTypes []= $blockType;
-            }
+            case '+':
+            case '*':
+                return array('List');
+            case '-':
+                return array('Set');
+            case '>':
+                return array('Quote');
+            case '#':
+                return array('Header');
+            case '`':
+                return array('Code');
+            case '~':
+                return array('Fences');
+            default:
+                return array('Paragraph');
         }
     }
 
