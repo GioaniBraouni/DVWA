@@ -171,6 +171,7 @@ class Parsedown
 
         foreach ($lines as $line)
         {
+
             if (chop($line) === '')
             {
                 if (isset($CurrentBlock))
@@ -183,15 +184,7 @@ class Parsedown
                 continue;
             }
 
-            while (($beforeTab = strstr($line, "\t", true)) !== false)
-            {
-                $shortage = 4 - mb_strlen($beforeTab, 'utf-8') % 4;
-
-                $line = $beforeTab
-                    . str_repeat(' ', $shortage)
-                    . substr($line, strlen($beforeTab) + 1)
-                ;
-            }
+            $line = $this->replaceTabChars($line);
 
             $indent = strspn($line, ' ');
 
@@ -230,17 +223,7 @@ class Parsedown
 
             # ~
 
-            $blockTypes = $this->unmarkedBlockTypes;
-
-            if (isset($this->BlockTypes[$marker]))
-            {
-                foreach ($this->BlockTypes[$marker] as $blockType)
-                {
-                    $blockTypes []= $blockType;
-                }
-            }
-
-            #
+            $blockTypes = $this->getBlockTypes($marker);
             # ~
 
             foreach ($blockTypes as $blockType)
@@ -314,6 +297,32 @@ class Parsedown
         # ~
 
         return $Elements;
+    }
+
+    private function replaceTabChars($line)
+    {
+        while (($beforeTab = strstr($line, "\t", true)) !== false)
+        {
+            $shortage = 4 - mb_strlen($beforeTab, 'utf-8') % 4;
+
+            $line = $beforeTab
+                . str_repeat(' ', $shortage)
+                . substr($line, strlen($beforeTab) + 1)
+            ;
+        }
+    }
+
+    private function getBlockTypes($marker)
+    {
+        $blockTypes = $this->unmarkedBlockTypes;
+
+        if (isset($this->BlockTypes[$marker]))
+        {
+            foreach ($this->BlockTypes[$marker] as $blockType)
+            {
+                $blockTypes []= $blockType;
+            }
+        }
     }
 
     protected function extractElement(array $Component)
