@@ -60,11 +60,19 @@ class HTMLPurifier_ChildDef_Table extends HTMLPurifier_ChildDef
                             $caption = $collection;
                             break;
                         case 'thead':
+                            if ($thead === false) {
+                                $thead = $collection;
+                            } else {
+                                // transmutate the first and less entries into
+                                // tbody tags, and then put into content
+                                $collection[$tag_index]->name = 'tbody';
+                                $collection[count($collection)-1]->name = 'tbody';
+                                $content[] = $collection;
+                            }
+                            break;
                         case 'tfoot':
-                            // access the appropriate variable, $thead or $tfoot
-                            $var = $collection[$tag_index]->name;
-                            if ($$var === false) {
-                                $$var = $collection;
+                            if ($tfoot === false) {
+                                $tfoot = $collection;
                             } else {
                                 // transmutate the first and less entries into
                                 // tbody tags, and then put into content
